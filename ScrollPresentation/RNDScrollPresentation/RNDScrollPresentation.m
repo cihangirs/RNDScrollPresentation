@@ -45,6 +45,13 @@
     // Do any additional setup after loading the view from its nib.
     toolbarHidden = self.navigationController.toolbarHidden;
     
+    self.scrollView.autoresizingMask =    (UIViewAutoresizingFlexibleWidth |
+                                           UIViewAutoresizingFlexibleHeight);
+    
+    self.pageControl.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin |
+                                        UIViewAutoresizingFlexibleLeftMargin |
+                                        UIViewAutoresizingFlexibleRightMargin);
+    
     self.automaticallyAdjustsScrollViewInsets = NO;
     
     if([self.navigationController.viewControllers count] == 1) {
@@ -67,7 +74,6 @@
     
     [self.navigationController setToolbarHidden:YES animated:YES];
 }
-     
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
@@ -75,6 +81,42 @@
     [self.navigationController setToolbarHidden:toolbarHidden animated:YES];
     
 }
+
+- (void)updateContentSize:(UIInterfaceOrientation)toInterfaceOrientation {
+    
+    CGFloat w, h;
+    CGFloat a = [UIScreen mainScreen].bounds.size.width;
+    CGFloat b = [UIScreen mainScreen].bounds.size.height;
+
+    w=a, h=b;
+    
+    if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+        w=b, h=a;
+    }
+    
+    self.scrollView.contentSize = CGSizeMake(w * numberOfPages, h);
+    
+    
+    
+}
+
+#pragma mark - Rotations
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
+    
+    [self updateContentSize:toInterfaceOrientation];
+    
+    int page = self.pageControl.currentPage;
+
+    [self loadScrollViewWithPage:page-1];
+    [self loadScrollViewWithPage:page];
+    [self loadScrollViewWithPage:page+1];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.scrollView setContentOffset:CGPointMake(0, 0)];
+    });
+
+}
+
 #pragma mark - Util
 
 - (void)setupPagedViews {
@@ -88,8 +130,10 @@
     self.pagedTextViews = imgViews;
     
     self.scrollView.pagingEnabled = YES;
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * numberOfPages, self.scrollView.frame.size.height);
+    
+    [self updateContentSize:[self.navigationController interfaceOrientation]];
     self.scrollView.showsHorizontalScrollIndicator = NO;
+    self.scrollView.maximumZoomScale = 1;
     self.scrollView.showsVerticalScrollIndicator = NO;
     self.scrollView.scrollsToTop = NO;
     self.scrollView.delegate = self;
@@ -100,6 +144,12 @@
     NSMutableArray *tmpArray = [[NSMutableArray alloc]initWithCapacity:numberOfPages];
     for(int i=0; i<numberOfPages; i++) {
         UIImageView *imgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+        imgView.autoresizingMask =    (UIViewAutoresizingFlexibleLeftMargin |
+                                        UIViewAutoresizingFlexibleWidth  |
+                                        UIViewAutoresizingFlexibleRightMargin |
+                                        UIViewAutoresizingFlexibleTopMargin |
+                                        UIViewAutoresizingFlexibleHeight  |
+                                        UIViewAutoresizingFlexibleBottomMargin);
         [imgView setBackgroundColor:[UIColor clearColor]];
         RNDScrollPresentationInfo *info = self.infoArray[i];
         [imgView setImage:info.infoImage];
@@ -146,6 +196,13 @@
         [lblText setTextColor:self.settingsLabel.textColor];
         [lblText setTextAlignment:self.settingsLabel.textAlignment];
         [lblText setLineBreakMode:self.settingsLabel.lineBreakMode];
+        
+        lblText.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
+                                       UIViewAutoresizingFlexibleWidth  |
+                                       UIViewAutoresizingFlexibleRightMargin |
+                                       UIViewAutoresizingFlexibleTopMargin |
+                                       UIViewAutoresizingFlexibleHeight  |
+                                       UIViewAutoresizingFlexibleBottomMargin);
         
         CGFloat height = 300;
         
