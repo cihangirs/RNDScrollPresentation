@@ -26,6 +26,7 @@
 @property (nonatomic, assign) IBOutlet UIPageControl *pageControl;
 
 @property (nonatomic, retain) UILabel *settingsLabel;
+@property (nonatomic) CGFloat autoScrollDelay;
 
 
 @end

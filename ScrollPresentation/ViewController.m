@@ -57,6 +57,7 @@
     info2.infoText = @"Jobs and several Apple employees, including Jef Raskin, visited Xerox PARC in December 1979 to see the Xerox Alto. Xerox granted Apple engineers three days of access to the PARC facilities in return for the option to buy 100,000 shares (800,000 split-adjusted shares) of Apple at the pre-IPO price of $10 a shar";
     
     self.vc = [[RNDScrollPresentation alloc]initWithArray:@[info0,info1,info2]];
+    self.vc.autoScrollDelay = 1.0f;
    
     UILabel *dummyLabel = [[UILabel alloc]init];
     dummyLabel.backgroundColor = [UIColor clearColor];

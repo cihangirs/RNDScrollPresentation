@@ -18,9 +18,11 @@
 @interface RNDScrollPresentation () {
     BOOL toolbarHidden;
     
-    BOOL pageControlUsed;
+
     int numberOfPages;
 }
+
+@property (nonatomic, retain) NSTimer *autoScrollTimer;
 
 @property (nonatomic, retain) NSArray *infoArray;
 @property (nonatomic, retain) NSMutableArray *pagedTextViews;
@@ -61,13 +63,18 @@
     
     [self setupPagedViews];
     
+    [self checkTimer];
+    
 }
+
+
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -269,9 +276,28 @@
     
 }
 
+- (void)checkTimer {
+    if (self.autoScrollDelay) {
+        self.autoScrollTimer = [NSTimer timerWithTimeInterval:self.autoScrollDelay
+                                                       target:self
+                                                     selector:@selector(autoScroll:)
+                                                     userInfo:nil
+                                                      repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:self.autoScrollTimer forMode:NSDefaultRunLoopMode];
+    }
+}
+
+- (void)autoScroll:(id)sender {
+    [self changePage:nil];
+}
+
 #pragma mark - Actions
 - (IBAction)changePage:(id)sender {
+    
     int page = self.pageControl.currentPage;
+    if(++page == numberOfPages) {
+        page = 0;
+    }
     
     [self loadScrollViewWithPage:page - 1];
     [self loadScrollViewWithPage:page];
@@ -280,7 +306,7 @@
     frame.origin.x = frame.size.width * page;
     frame.origin.y = 0;
     [self.scrollView scrollRectToVisible:frame animated:YES];
-    pageControlUsed = YES;
+
 }
 
 
@@ -316,10 +342,13 @@
     }
     
 }
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    pageControlUsed = NO;
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    [self.autoScrollTimer invalidate];
 }
 
-
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self checkTimer];
+}
 
 @end
