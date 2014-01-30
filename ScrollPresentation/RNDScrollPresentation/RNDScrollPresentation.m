@@ -296,6 +296,13 @@
     
     int page = self.pageControl.currentPage;
     if(++page == numberOfPages) {
+        double delayInSeconds = 0.2;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [UIView animateWithDuration:0.4f animations:^{
+                [self.pagedImgViews[numberOfPages-1] setAlpha:0.0f];
+            }];
+        });
         page = 0;
     }
     
