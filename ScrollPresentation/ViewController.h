@@ -12,4 +12,7 @@
 
 - (IBAction)buttonTouched:(id)sender;
 
+@property (nonatomic, assign) IBOutlet UIButton *btnRemoveSubview;
+- (IBAction)buttonRemoveTouched:(id)sender;
+
 @end

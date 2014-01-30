@@ -82,17 +82,23 @@
     
 }
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self updateContentSize:[self.navigationController interfaceOrientation]];
+}
+
 - (void)updateContentSize:(UIInterfaceOrientation)toInterfaceOrientation {
     
     CGFloat w, h;
-    CGFloat a = [UIScreen mainScreen].bounds.size.width;
-    CGFloat b = [UIScreen mainScreen].bounds.size.height;
-
+ 
+    CGFloat a = self.scrollView.bounds.size.width;
+    CGFloat b = self.scrollView.bounds.size.height;
+    
     w=a, h=b;
     
-    if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-        w=b, h=a;
-    }
+//    if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+//        w=b, h=a;
+//    }
     
     self.scrollView.contentSize = CGSizeMake(w * numberOfPages, h);
     

@@ -11,6 +11,8 @@
 
 @interface ViewController ()
 
+@property (nonatomic, retain) RNDScrollPresentation *vc;
+
 @end
 
 @implementation ViewController
@@ -33,6 +35,12 @@
     [self present:[(UIButton*)sender tag]];
 }
 
+- (IBAction)buttonRemoveTouched:(id)sender {
+    [self.vc.view removeFromSuperview];
+    self.vc = nil;
+    [self.btnRemoveSubview setEnabled:NO];
+}
+
 #pragma mark - Util
 - (void)present:(NSUInteger)type {
     
@@ -48,21 +56,27 @@
     info2.infoImage = [UIImage imageNamed:@"img2"];
     info2.infoText = @"Jobs and several Apple employees, including Jef Raskin, visited Xerox PARC in December 1979 to see the Xerox Alto. Xerox granted Apple engineers three days of access to the PARC facilities in return for the option to buy 100,000 shares (800,000 split-adjusted shares) of Apple at the pre-IPO price of $10 a shar";
     
-    RNDScrollPresentation *vc = [[RNDScrollPresentation alloc]initWithArray:@[info0,info1,info2]];
+    self.vc = [[RNDScrollPresentation alloc]initWithArray:@[info0,info1,info2]];
    
     UILabel *dummyLabel = [[UILabel alloc]init];
     dummyLabel.backgroundColor = [UIColor clearColor];
     dummyLabel.textColor = [UIColor whiteColor];
     dummyLabel.font = [UIFont systemFontOfSize:15];
     dummyLabel.textAlignment = NSTextAlignmentCenter;
-    [vc setSettingsLabel:dummyLabel];
+    [self.vc setSettingsLabel:dummyLabel];
     
     if(type == 0) {
-        UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:vc];
+        UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:self.vc];
         [self presentViewController:nav animated:YES completion:nil];
     }
     else if(type == 1) {
-        [self.navigationController pushViewController:vc animated:YES];
+        [self.navigationController pushViewController:self.vc animated:YES];
+    }
+    else if(type == 2) {
+        [self.vc.view setFrame:CGRectMake(20, 100, 280, 280)];
+        [self.view addSubview:self.vc.view];
+        [self.btnRemoveSubview setEnabled:YES];
+        
     }
 }
 
