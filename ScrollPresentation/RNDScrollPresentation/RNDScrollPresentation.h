@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol RNDScrollPresentationDelegate <NSObject>
+
+@required
+- (UIView*)presentationViewForPage:(NSUInteger)page withSize:(CGSize)size;
+
+@optional
+- (void)presentationTouched:(NSUInteger)page;
+
+@end
+
 @interface RNDScrollPresentationInfo : NSObject
 
 @property (nonatomic, retain) UIImage *infoImage;
@@ -24,6 +34,8 @@
 
 @property (nonatomic, assign) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, assign) IBOutlet UIPageControl *pageControl;
+
+@property (nonatomic, assign) id<RNDScrollPresentationDelegate>delegate;
 
 @property (nonatomic, retain) UILabel *settingsLabel;
 @property (nonatomic) CGFloat autoScrollDelay;

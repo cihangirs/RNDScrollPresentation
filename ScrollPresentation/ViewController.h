@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RNDScrollPresentation.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <RNDScrollPresentationDelegate>
 
 - (IBAction)buttonTouched:(id)sender;
 

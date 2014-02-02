@@ -154,6 +154,9 @@
     self.pageControl.numberOfPages = numberOfPages;
     self.pageControl.currentPage = 0;
     
+    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapped:)];
+    [self.scrollView addGestureRecognizer:gesture];
+    
     NSMutableArray *tmpArray = [[NSMutableArray alloc]initWithCapacity:numberOfPages];
     for(int i=0; i<numberOfPages; i++) {
         UIImageView *imgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
@@ -195,31 +198,26 @@
     
     const CGFloat xPadding = 30;
     const CGFloat yPadding = 15;
+    const CGFloat height = 300;
     
-    BottomLabel *lblText = [self.pagedTextViews objectAtIndex:page];
+    UIView *presentationView = [self.pagedTextViews objectAtIndex:page];
     
-    if ((NSNull *)lblText == [NSNull null]) {
+    if ((NSNull *)presentationView == [NSNull null]) {
         
-        lblText = [[BottomLabel alloc] init];
-        lblText.numberOfLines = 0;
-
-        //label settings
-        [lblText setFont:self.settingsLabel.font];
-        [lblText setBackgroundColor:self.settingsLabel.backgroundColor];
-        [lblText setTextColor:self.settingsLabel.textColor];
-        [lblText setTextAlignment:self.settingsLabel.textAlignment];
-        [lblText setLineBreakMode:self.settingsLabel.lineBreakMode];
+        presentationView = [self.delegate presentationViewForPage:page withSize:CGSizeMake(self.scrollView.frame.size.width - 2*xPadding, height)];
         
-        lblText.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
-                                       UIViewAutoresizingFlexibleWidth  |
-                                       UIViewAutoresizingFlexibleRightMargin |
-                                       UIViewAutoresizingFlexibleTopMargin |
-                                       UIViewAutoresizingFlexibleHeight  |
-                                       UIViewAutoresizingFlexibleBottomMargin);
+        if(!presentationView) {
+            presentationView = [self defaultPresentationView:page];
+        }
         
-        CGFloat height = 300;
+        presentationView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
+                                    UIViewAutoresizingFlexibleWidth  |
+                                    UIViewAutoresizingFlexibleRightMargin |
+                                    UIViewAutoresizingFlexibleTopMargin |
+                                    UIViewAutoresizingFlexibleHeight  |
+                                    UIViewAutoresizingFlexibleBottomMargin);
         
-        if (lblText.superview == nil) {
+        if (presentationView.superview == nil) {
             
             CGRect frame = self.scrollView.frame;
             
@@ -227,18 +225,15 @@
             frame.origin.y = self.pageControl.frame.origin.y - (yPadding + height);
             frame.size.width -= 2*xPadding;
             frame.size.height = height;
-            [lblText setFrame:frame];
+            [presentationView setFrame:frame];
             
-            [self.scrollView addSubview:lblText];
+            [self.scrollView addSubview:presentationView];
             
         }
         
-        RNDScrollPresentationInfo *info = self.infoArray[page];
-        [lblText setText:info.infoText];
-        
         [self addTips];
         
-        [self.pagedTextViews replaceObjectAtIndex:page withObject:lblText];
+        [self.pagedTextViews replaceObjectAtIndex:page withObject:presentationView];
         
     }
     
@@ -265,7 +260,7 @@
     CGFloat alpha = kMul - otherAlpha;
     
 
-    NSLog(@"%d:%f - %d:%f",page, alpha, otherPage, otherAlpha);
+    //NSLog(@"%d:%f - %d:%f",page, alpha, otherPage, otherAlpha);
     
     if(page < numberOfPages) {
         [self.pagedImgViews[page] setAlpha:alpha];
@@ -289,6 +284,28 @@
 
 - (void)autoScroll:(id)sender {
     [self changePage:nil];
+}
+
+- (UIView*)defaultPresentationView:(NSUInteger)page {
+    //...
+    BottomLabel *lblText = [BottomLabel new];
+    
+    lblText = [[BottomLabel alloc] init];
+    lblText.numberOfLines = 0;
+    
+    //label settings
+    [lblText setFont:self.settingsLabel.font];
+    [lblText setBackgroundColor:self.settingsLabel.backgroundColor];
+    [lblText setTextColor:self.settingsLabel.textColor];
+    [lblText setTextAlignment:self.settingsLabel.textAlignment];
+    [lblText setLineBreakMode:self.settingsLabel.lineBreakMode];
+    
+    
+    RNDScrollPresentationInfo *info = self.infoArray[page];
+    [lblText setText:info.infoText];
+    //...
+    
+    return lblText;
 }
 
 #pragma mark - Actions
@@ -326,6 +343,14 @@
     }
     else {
         [self.navigationController popToRootViewControllerAnimated:YES];
+    }
+}
+
+- (void)tapped:(UIGestureRecognizer*)gesture {
+    if(gesture.state == UIGestureRecognizerStateEnded) {
+        if([self.delegate respondsToSelector:@selector(presentationTouched:)]) {
+            [self.delegate presentationTouched:self.pageControl.currentPage];
+        }
     }
 }
 

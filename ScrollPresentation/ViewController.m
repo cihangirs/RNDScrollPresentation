@@ -7,7 +7,9 @@
 //
 
 #import "ViewController.h"
-#import "RNDScrollPresentation.h"
+
+#define CUSTOM_PRESATION_VIEW   (1)
+
 
 @interface ViewController ()
 
@@ -66,6 +68,8 @@
     dummyLabel.textAlignment = NSTextAlignmentCenter;
     [self.vc setSettingsLabel:dummyLabel];
     
+    [self.vc setDelegate:self];
+    
     if(type == 0) {
         UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:self.vc];
         [self presentViewController:nav animated:YES completion:nil];
@@ -80,5 +84,41 @@
         
     }
 }
+
+#pragma mark - Presentation Delegate
+
+- (UIView*)presentationViewForPage:(NSUInteger)page withSize:(CGSize)size {
+    
+    UIView *aView = nil;
+    
+    if(CUSTOM_PRESATION_VIEW) {
+        aView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, size.width, size.height)];
+        [aView setBackgroundColor:[UIColor colorWithRed:0.000 green:1.000 blue:0.000 alpha:0.470]];
+        
+        UILabel *aLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 50, 25)];
+        [aLabel setBackgroundColor:[UIColor colorWithRed:1.000 green:0.258 blue:0.350 alpha:0.470]];
+        [aLabel setText:[NSString stringWithFormat:@"%d",page]];
+        [aLabel setTextAlignment:NSTextAlignmentCenter];
+        [aLabel setCenter:aView.center];
+        
+        aLabel.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
+                                    UIViewAutoresizingFlexibleWidth  |
+                                    UIViewAutoresizingFlexibleRightMargin |
+                                    UIViewAutoresizingFlexibleTopMargin |
+                                    UIViewAutoresizingFlexibleBottomMargin);
+        
+        [aView setAutoresizesSubviews:YES];
+        [aView addSubview:aLabel];
+        
+    }
+    
+    return aView;
+}
+
+- (void)presentationTouched:(NSUInteger)page {
+    NSLog(@"presentationTouched: %d",page);
+    
+}
+
 
 @end
