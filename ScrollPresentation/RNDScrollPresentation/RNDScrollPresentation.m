@@ -12,13 +12,11 @@
 
 @implementation RNDScrollPresentationInfo
 
-
 @end
 
 @interface RNDScrollPresentation () {
     BOOL toolbarHidden;
     
-
     int numberOfPages;
 }
 
@@ -46,6 +44,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     toolbarHidden = self.navigationController.toolbarHidden;
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    self.scrollView = [[UIScrollView alloc]initWithFrame:self.view.bounds];
+    [self.scrollView setDelegate:self];
+    [self.view addSubview:self.scrollView];
+    
+    CGFloat bottomPaddingY = (self.pageControllBottomPadding ? self.pageControllBottomPadding:38);
+    CGRect pageControlFrame = CGRectMake(0, self.view.bounds.size.height - bottomPaddingY, self.view.bounds.size.width, 37);
+    self.pageControl = [[UIPageControl alloc]initWithFrame:pageControlFrame];
+    [self.view addSubview:self.pageControl];
+    
+    [self.view addSubview:self.pageControl];
     
     self.scrollView.autoresizingMask =    (UIViewAutoresizingFlexibleWidth |
                                            UIViewAutoresizingFlexibleHeight);
@@ -54,7 +64,7 @@
                                         UIViewAutoresizingFlexibleLeftMargin |
                                         UIViewAutoresizingFlexibleRightMargin);
     
-    self.automaticallyAdjustsScrollViewInsets = NO;
+
     
     if([self.navigationController.viewControllers count] == 1) {
         UIBarButtonItem *dismissItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismiss:)];
@@ -66,7 +76,6 @@
     [self checkTimer];
     
 }
-
 
 
 - (void)didReceiveMemoryWarning
@@ -210,30 +219,32 @@
             presentationView = [self defaultPresentationView:page];
         }
         
-        presentationView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
-                                    UIViewAutoresizingFlexibleWidth  |
-                                    UIViewAutoresizingFlexibleRightMargin |
-                                    UIViewAutoresizingFlexibleTopMargin |
-                                    UIViewAutoresizingFlexibleHeight  |
-                                    UIViewAutoresizingFlexibleBottomMargin);
-        
-        if (presentationView.superview == nil) {
+        if(presentationView) {
+            presentationView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
+                                        UIViewAutoresizingFlexibleWidth  |
+                                        UIViewAutoresizingFlexibleRightMargin |
+                                        UIViewAutoresizingFlexibleTopMargin |
+                                        UIViewAutoresizingFlexibleHeight  |
+                                        UIViewAutoresizingFlexibleBottomMargin);
             
-            CGRect frame = self.scrollView.frame;
+            if (presentationView.superview == nil) {
+                
+                CGRect frame = self.scrollView.frame;
+                
+                frame.origin.x = frame.size.width * page + xPadding;
+                frame.origin.y = self.pageControl.frame.origin.y - (yPadding + height);
+                frame.size.width -= 2*xPadding;
+                frame.size.height = height;
+                [presentationView setFrame:frame];
+                
+                [self.scrollView addSubview:presentationView];
+                
+            }
             
-            frame.origin.x = frame.size.width * page + xPadding;
-            frame.origin.y = self.pageControl.frame.origin.y - (yPadding + height);
-            frame.size.width -= 2*xPadding;
-            frame.size.height = height;
-            [presentationView setFrame:frame];
+            [self addTips];
             
-            [self.scrollView addSubview:presentationView];
-            
+            [self.pagedTextViews replaceObjectAtIndex:page withObject:presentationView];
         }
-        
-        [self addTips];
-        
-        [self.pagedTextViews replaceObjectAtIndex:page withObject:presentationView];
         
     }
     
@@ -287,23 +298,29 @@
 }
 
 - (UIView*)defaultPresentationView:(NSUInteger)page {
-    //...
-    BottomLabel *lblText = [BottomLabel new];
-    
-    lblText = [[BottomLabel alloc] init];
-    lblText.numberOfLines = 0;
-    
-    //label settings
-    [lblText setFont:self.settingsLabel.font];
-    [lblText setBackgroundColor:self.settingsLabel.backgroundColor];
-    [lblText setTextColor:self.settingsLabel.textColor];
-    [lblText setTextAlignment:self.settingsLabel.textAlignment];
-    [lblText setLineBreakMode:self.settingsLabel.lineBreakMode];
-    
     
     RNDScrollPresentationInfo *info = self.infoArray[page];
-    [lblText setText:info.infoText];
-    //...
+    BottomLabel *lblText = nil;
+    
+    if(info.infoText) {
+        //...
+        BottomLabel *lblText = [BottomLabel new];
+        
+        lblText = [[BottomLabel alloc] init];
+        lblText.numberOfLines = 0;
+        
+        if(self.settingsLabel) {
+            //label settings
+            [lblText setFont:self.settingsLabel.font];
+            [lblText setBackgroundColor:self.settingsLabel.backgroundColor];
+            [lblText setTextColor:self.settingsLabel.textColor];
+            [lblText setTextAlignment:self.settingsLabel.textAlignment];
+            [lblText setLineBreakMode:self.settingsLabel.lineBreakMode];
+        }
+        
+        [lblText setText:info.infoText];
+        //...
+    }
     
     return lblText;
 }

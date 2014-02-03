@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F7803811189F328D004D492F /* ScrollPresentationSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7803810189F328D004D492F /* ScrollPresentationSubclass.m */; };
 		F7C77A301890132D0035542A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C77A2F1890132D0035542A /* Foundation.framework */; };
 		F7C77A321890132D0035542A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C77A311890132D0035542A /* CoreGraphics.framework */; };
 		F7C77A341890132D0035542A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C77A331890132D0035542A /* UIKit.framework */; };
@@ -22,7 +23,6 @@
 		F7C77A591890132D0035542A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7C77A571890132D0035542A /* InfoPlist.strings */; };
 		F7C77A5B1890132D0035542A /* ScrollPresentationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C77A5A1890132D0035542A /* ScrollPresentationTests.m */; };
 		F7C77A67189013AF0035542A /* RNDScrollPresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C77A65189013AF0035542A /* RNDScrollPresentation.m */; };
-		F7C77A68189013AF0035542A /* RNDScrollPresentation.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C77A66189013AF0035542A /* RNDScrollPresentation.xib */; };
 		F7C77A741890236D0035542A /* BottomLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C77A731890236D0035542A /* BottomLabel.m */; };
 		F7C77A78189038230035542A /* img0.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C77A75189038230035542A /* img0.png */; };
 		F7C77A79189038230035542A /* img1.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C77A76189038230035542A /* img1.png */; };
@@ -40,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F780380F189F328D004D492F /* ScrollPresentationSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollPresentationSubclass.h; sourceTree = "<group>"; };
+		F7803810189F328D004D492F /* ScrollPresentationSubclass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollPresentationSubclass.m; sourceTree = "<group>"; };
 		F7C77A2C1890132D0035542A /* ScrollPresentation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScrollPresentation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7C77A2F1890132D0035542A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F7C77A311890132D0035542A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -61,7 +63,6 @@
 		F7C77A5A1890132D0035542A /* ScrollPresentationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScrollPresentationTests.m; sourceTree = "<group>"; };
 		F7C77A64189013AF0035542A /* RNDScrollPresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNDScrollPresentation.h; path = RNDScrollPresentation/RNDScrollPresentation.h; sourceTree = "<group>"; };
 		F7C77A65189013AF0035542A /* RNDScrollPresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNDScrollPresentation.m; path = RNDScrollPresentation/RNDScrollPresentation.m; sourceTree = "<group>"; };
-		F7C77A66189013AF0035542A /* RNDScrollPresentation.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = RNDScrollPresentation.xib; path = RNDScrollPresentation/RNDScrollPresentation.xib; sourceTree = "<group>"; };
 		F7C77A721890236D0035542A /* BottomLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BottomLabel.h; path = RNDScrollPresentation/BottomLabel.h; sourceTree = "<group>"; };
 		F7C77A731890236D0035542A /* BottomLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BottomLabel.m; path = RNDScrollPresentation/BottomLabel.m; sourceTree = "<group>"; };
 		F7C77A75189038230035542A /* img0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = img0.png; sourceTree = "<group>"; };
@@ -132,6 +133,8 @@
 				F7C77A411890132D0035542A /* Main.storyboard */,
 				F7C77A441890132D0035542A /* ViewController.h */,
 				F7C77A451890132D0035542A /* ViewController.m */,
+				F780380F189F328D004D492F /* ScrollPresentationSubclass.h */,
+				F7803810189F328D004D492F /* ScrollPresentationSubclass.m */,
 				F7C77A6B189018820035542A /* res */,
 				F7C77A471890132D0035542A /* Images.xcassets */,
 				F7C77A361890132D0035542A /* Supporting Files */,
@@ -175,7 +178,6 @@
 				F7C77A731890236D0035542A /* BottomLabel.m */,
 				F7C77A64189013AF0035542A /* RNDScrollPresentation.h */,
 				F7C77A65189013AF0035542A /* RNDScrollPresentation.m */,
-				F7C77A66189013AF0035542A /* RNDScrollPresentation.xib */,
 			);
 			name = RNDScrollPresentation;
 			sourceTree = "<group>";
@@ -268,7 +270,6 @@
 			files = (
 				F7C77A481890132D0035542A /* Images.xcassets in Resources */,
 				F7C77A78189038230035542A /* img0.png in Resources */,
-				F7C77A68189013AF0035542A /* RNDScrollPresentation.xib in Resources */,
 				F7C77A3A1890132D0035542A /* InfoPlist.strings in Resources */,
 				F7C77A431890132D0035542A /* Main.storyboard in Resources */,
 				F7C77A79189038230035542A /* img1.png in Resources */,
@@ -293,6 +294,7 @@
 			files = (
 				F7C77A741890236D0035542A /* BottomLabel.m in Sources */,
 				F7C77A461890132D0035542A /* ViewController.m in Sources */,
+				F7803811189F328D004D492F /* ScrollPresentationSubclass.m in Sources */,
 				F7C77A67189013AF0035542A /* RNDScrollPresentation.m in Sources */,
 				F7C77A401890132D0035542A /* AppDelegate.m in Sources */,
 				F7C77A3C1890132D0035542A /* main.m in Sources */,

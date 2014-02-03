@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ScrollPresentationSubclass.h"
 
 #define CUSTOM_PRESATION_VIEW   (1)
 
@@ -78,6 +79,13 @@
         [self.navigationController pushViewController:self.vc animated:YES];
     }
     else if(type == 2) {
+        ScrollPresentationSubclass *subclass = [[ScrollPresentationSubclass alloc]initWithArray:@[info0,info1,info2]];
+        subclass.autoScrollDelay = 2.0f;
+        [subclass setDelegate:self];
+
+        [self.navigationController pushViewController:subclass animated:YES];
+    }
+    else if(type == 3) {
         [self.vc.view setFrame:CGRectMake(20, 100, 280, 280)];
         [self.view addSubview:self.vc.view];
         [self.btnRemoveSubview setEnabled:YES];

@@ -31,14 +31,14 @@
 - (id)initWithArray:(NSArray*)infoArray;
 
 
-
-@property (nonatomic, assign) IBOutlet UIScrollView *scrollView;
-@property (nonatomic, assign) IBOutlet UIPageControl *pageControl;
+@property (nonatomic, retain) UIScrollView *scrollView;
+@property (nonatomic, retain) UIPageControl *pageControl;
 
 @property (nonatomic, assign) id<RNDScrollPresentationDelegate>delegate;
 
 @property (nonatomic, retain) UILabel *settingsLabel;
 @property (nonatomic) CGFloat autoScrollDelay;
+@property (nonatomic) CGFloat pageControllBottomPadding;
 
 
 @end
