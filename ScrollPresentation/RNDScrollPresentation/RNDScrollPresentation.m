@@ -307,7 +307,6 @@
     
     if(info.infoText) {
         //...
-        BottomLabel *lblText = [BottomLabel new];
         
         lblText = [[BottomLabel alloc] init];
         lblText.numberOfLines = 0;
