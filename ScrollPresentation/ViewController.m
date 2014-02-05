@@ -69,6 +69,8 @@
     dummyLabel.textAlignment = NSTextAlignmentCenter;
     [self.vc setSettingsLabel:dummyLabel];
     
+    [self.vc setImgViewContentMode:UIViewContentModeScaleAspectFit];
+    
     [self.vc setDelegate:self];
     
     if(type == 0) {
@@ -81,6 +83,7 @@
     else if(type == 2) {
         ScrollPresentationSubclass *subclass = [[ScrollPresentationSubclass alloc]initWithArray:@[info0,info1,info2]];
         subclass.autoScrollDelay = 2.0f;
+        [subclass setImgViewContentMode:UIViewContentModeScaleAspectFit];
         [subclass setDelegate:self];
 
         [self.navigationController pushViewController:subclass animated:YES];

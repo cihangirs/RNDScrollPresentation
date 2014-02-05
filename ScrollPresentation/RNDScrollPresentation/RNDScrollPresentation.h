@@ -39,6 +39,7 @@
 @property (nonatomic, retain) UILabel *settingsLabel;
 @property (nonatomic) CGFloat autoScrollDelay;
 @property (nonatomic) CGFloat pageControllBottomPadding;
+@property (nonatomic) UIViewContentMode imgViewContentMode;
 
 
 @end

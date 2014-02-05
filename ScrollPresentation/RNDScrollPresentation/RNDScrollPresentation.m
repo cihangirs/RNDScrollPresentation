@@ -176,7 +176,7 @@
                                         UIViewAutoresizingFlexibleHeight  |
                                         UIViewAutoresizingFlexibleBottomMargin);
         
-        [imgView setContentMode:UIViewContentModeScaleAspectFit];
+        [imgView setContentMode:self.imgViewContentMode];
         
         [imgView setBackgroundColor:[UIColor clearColor]];
         RNDScrollPresentationInfo *info = self.infoArray[i];
