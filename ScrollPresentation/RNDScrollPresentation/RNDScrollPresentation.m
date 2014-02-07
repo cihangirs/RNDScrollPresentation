@@ -9,6 +9,11 @@
 #import "RNDScrollPresentation.h"
 #import "BottomLabel.h"
 
+#define DEBUG_COLORS    (0)
+
+#define xPadding (30)
+#define yPadding (15)
+
 
 @implementation RNDScrollPresentationInfo
 
@@ -30,6 +35,22 @@
 
 @implementation RNDScrollPresentation
 
+
+- (id)initWithPageCount:(NSUInteger)pageCount {
+    if(self = [self initWithNibName:nil bundle:nil]) {
+        
+        NSMutableArray *tmpArray = [[NSMutableArray alloc]initWithCapacity:pageCount];
+        for(int i=0; i<pageCount; i++) {
+            [tmpArray addObject:[NSNull null]];
+        }
+        
+        self.infoArray = [NSArray arrayWithArray:tmpArray];
+        
+        
+    }
+    return self;
+}
+
 - (id)initWithArray:(NSArray*)infoArray {
     if(self = [self initWithNibName:nil bundle:nil]) {
         
@@ -46,25 +67,38 @@
     toolbarHidden = self.navigationController.toolbarHidden;
     self.automaticallyAdjustsScrollViewInsets = NO;
     
+    
+    
+    self.view.autoresizingMask =    (UIViewAutoresizingFlexibleLeftMargin |
+                                     UIViewAutoresizingFlexibleWidth  |
+                                     UIViewAutoresizingFlexibleRightMargin |
+                                     UIViewAutoresizingFlexibleTopMargin |
+                                     UIViewAutoresizingFlexibleHeight  |
+                                     UIViewAutoresizingFlexibleBottomMargin);
+    
+    self.view.autoresizesSubviews = YES;
+    
     self.scrollView = [[UIScrollView alloc]initWithFrame:self.view.bounds];
-    [self.scrollView setDelegate:self];
     [self.view addSubview:self.scrollView];
+    
+    if(DEBUG_COLORS){
+        [self.scrollView setBackgroundColor:[UIColor colorWithRed:1.000 green:0.500 blue:0.000 alpha:0.360]];//REMOVE
+    }
     
     CGFloat bottomPaddingY = (self.pageControllBottomPadding ? self.pageControllBottomPadding:38);
     CGRect pageControlFrame = CGRectMake(0, self.view.bounds.size.height - bottomPaddingY, self.view.bounds.size.width, 37);
     self.pageControl = [[UIPageControl alloc]initWithFrame:pageControlFrame];
     [self.view addSubview:self.pageControl];
     
-    [self.view addSubview:self.pageControl];
     
     self.scrollView.autoresizingMask =    (UIViewAutoresizingFlexibleWidth |
                                            UIViewAutoresizingFlexibleHeight);
     
     self.pageControl.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin |
-                                        UIViewAutoresizingFlexibleLeftMargin |
-                                        UIViewAutoresizingFlexibleRightMargin);
+                                         UIViewAutoresizingFlexibleLeftMargin |
+                                         UIViewAutoresizingFlexibleRightMargin);
     
-
+    
     
     if([self.navigationController.viewControllers count] == 1) {
         UIBarButtonItem *dismissItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismiss:)];
@@ -73,7 +107,7 @@
     
     [self setupPagedViews];
     
-    [self checkTimer];
+    
     
 }
 
@@ -89,13 +123,18 @@
     [super viewDidAppear:animated];
     
     [self.navigationController setToolbarHidden:YES animated:YES];
+    [self.scrollView setDelegate:self];
+    
+    [self checkTimer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
     [self.navigationController setToolbarHidden:toolbarHidden animated:YES];
+    [self.scrollView setDelegate:nil];
     
+    [self.autoScrollTimer invalidate];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -103,32 +142,15 @@
     [self updateContentSize:[self.navigationController interfaceOrientation]];
 }
 
-- (void)updateContentSize:(UIInterfaceOrientation)toInterfaceOrientation {
-    
-    CGFloat w, h;
- 
-    CGFloat a = self.scrollView.bounds.size.width;
-    CGFloat b = self.scrollView.bounds.size.height;
-    
-    w=a, h=b;
-    
-//    if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-//        w=b, h=a;
-//    }
-    
-    self.scrollView.contentSize = CGSizeMake(w * numberOfPages, h);
-    
-    
-    
-}
 
 #pragma mark - Rotations
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
     
+    
     [self updateContentSize:toInterfaceOrientation];
     
     int page = self.pageControl.currentPage;
-
+    
     [self loadScrollViewWithPage:page-1];
     [self loadScrollViewWithPage:page];
     [self loadScrollViewWithPage:page+1];
@@ -136,7 +158,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.scrollView setContentOffset:CGPointMake(0, 0)];
     });
-
+    
+    
 }
 
 #pragma mark - Util
@@ -144,7 +167,7 @@
 - (void)setupPagedViews {
     
     numberOfPages = [self.infoArray count];
-
+    
     NSMutableArray *imgViews = [[NSMutableArray alloc] init];
     for (unsigned i = 0; i < numberOfPages; i++) {
         [imgViews addObject:[NSNull null]];
@@ -166,37 +189,73 @@
     UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapped:)];
     [self.scrollView addGestureRecognizer:gesture];
     
+    UILongPressGestureRecognizer *longGesture = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(longTapped:)];
+    longGesture.minimumPressDuration = 0.2f;
+    [self.scrollView addGestureRecognizer:longGesture];
+    
     NSMutableArray *tmpArray = [[NSMutableArray alloc]initWithCapacity:numberOfPages];
     for(int i=0; i<numberOfPages; i++) {
-        UIImageView *imgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
-        imgView.autoresizingMask =    (UIViewAutoresizingFlexibleLeftMargin |
-                                        UIViewAutoresizingFlexibleWidth  |
-                                        UIViewAutoresizingFlexibleRightMargin |
-                                        UIViewAutoresizingFlexibleTopMargin |
-                                        UIViewAutoresizingFlexibleHeight  |
-                                        UIViewAutoresizingFlexibleBottomMargin);
+        UIView *bgView = nil;
         
-        [imgView setContentMode:self.imgViewContentMode];
         
-        [imgView setBackgroundColor:[UIColor clearColor]];
-        RNDScrollPresentationInfo *info = self.infoArray[i];
-        [imgView setImage:info.infoImage];
-        [imgView setAlpha:(i==0?1.0f:0.0f)];
-        [tmpArray addObject:imgView];
-        [self.view addSubview:imgView];
-    }
+        if([self.delegate respondsToSelector:@selector(scrollPresentation:backgroundViewForPage:withSize:)]) {
+            bgView = [self.delegate scrollPresentation:self backgroundViewForPage:i withSize:self.view.bounds.size];
+        }
+        
+        if(bgView == nil) {//use image array
+            
+            UIImageView *imgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+            
+            [imgView setContentMode:self.imgViewContentMode];
+            
+            RNDScrollPresentationInfo *info = self.infoArray[i];
+            [imgView setImage:info.infoImage];
+            
+            bgView = imgView;
+        }
+        
+        bgView.autoresizingMask =    (UIViewAutoresizingFlexibleLeftMargin |
+                                      UIViewAutoresizingFlexibleWidth  |
+                                      UIViewAutoresizingFlexibleRightMargin |
+                                      UIViewAutoresizingFlexibleTopMargin |
+                                      UIViewAutoresizingFlexibleHeight  |
+                                      UIViewAutoresizingFlexibleBottomMargin);
+        
+        [bgView setBackgroundColor:[UIColor clearColor]];
+        
+        if(DEBUG_COLORS) {
+            [bgView setBackgroundColor:[UIColor colorWithRed:1.000 green:0.500 blue:0.000 alpha:0.450]];
+        }
+        
+        [bgView setAlpha:(i==0?1.0f:0.0f)];
+        
+        [tmpArray addObject:bgView];
+        [self.view addSubview:bgView];
+        
+    }//end for
+    
+    
+    
     self.pagedImgViews = [NSArray arrayWithArray:tmpArray];
-
+    
     [self.view bringSubviewToFront:self.scrollView];
     [self.view bringSubviewToFront:self.pageControl];
     [self.scrollView setAlpha:0.0f];
     
-    [self loadScrollViewWithPage:0];
-    [self loadScrollViewWithPage:1];
     
-    [UIView animateWithDuration:0.6f animations:^{
-        [self.scrollView setAlpha:1.0f];
-    }];
+    double delayInSeconds = 0.5;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self loadScrollViewWithPage:0];
+        [self loadScrollViewWithPage:1];
+        
+        [UIView animateWithDuration:0.6f animations:^{
+            [self.scrollView setAlpha:1.0f];
+        }];
+    });
+    
+    
+    
 }
 
 - (void)addTips {
@@ -208,39 +267,47 @@
     if (page < 0) return;
     if (page >= numberOfPages) return;
     
-    const CGFloat xPadding = 30;
-    const CGFloat yPadding = 15;
-    const CGFloat height = 300;
+    
+    CGFloat height = self.view.frame.size.height;
     
     UIView *presentationView = [self.pagedTextViews objectAtIndex:page];
     
+    
+    CGRect frame = self.scrollView.frame;
+    CGFloat bottom = height - self.pageControl.frame.origin.y;
+    
+    frame.origin.x = frame.size.width * page + xPadding;
+    frame.origin.y = yPadding;
+    frame.size.width -= 2*xPadding;
+    frame.size.height = height - (bottom + yPadding);
+    
     if ((NSNull *)presentationView == [NSNull null]) {
         
-        presentationView = [self.delegate presentationViewForPage:page withSize:CGSizeMake(self.scrollView.frame.size.width - 2*xPadding, height)];
+        if([self.delegate respondsToSelector:@selector(scrollPresentation:viewForPage:withSize:)]) {
+            presentationView = [self.delegate scrollPresentation:self viewForPage:page withSize:frame.size];
+        }
         
-        if(!presentationView) {
+        if(presentationView == nil || (NSNull*)presentationView == [NSNull null]) {
             presentationView = [self defaultPresentationView:page];
         }
         
         if(presentationView) {
             presentationView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
-                                        UIViewAutoresizingFlexibleWidth  |
-                                        UIViewAutoresizingFlexibleRightMargin |
-                                        UIViewAutoresizingFlexibleTopMargin |
-                                        UIViewAutoresizingFlexibleHeight  |
-                                        UIViewAutoresizingFlexibleBottomMargin);
+                                                 UIViewAutoresizingFlexibleWidth  |
+                                                 UIViewAutoresizingFlexibleRightMargin |
+                                                 UIViewAutoresizingFlexibleTopMargin |
+                                                 UIViewAutoresizingFlexibleHeight  |
+                                                 UIViewAutoresizingFlexibleBottomMargin);
             
             if (presentationView.superview == nil) {
                 
-                CGRect frame = self.scrollView.frame;
                 
-                frame.origin.x = frame.size.width * page + xPadding;
-                frame.origin.y = self.pageControl.frame.origin.y - (yPadding + height);
-                frame.size.width -= 2*xPadding;
-                frame.size.height = height;
-                [presentationView setFrame:frame];
-                
+                [presentationView setAlpha:0];
                 [self.scrollView addSubview:presentationView];
+                
+                if(DEBUG_COLORS) {
+                    [presentationView setBackgroundColor:[UIColor colorWithRed:0.000 green:0.000 blue:1.000 alpha:0.810]];//REMOVE
+                }
                 
             }
             
@@ -249,6 +316,24 @@
             [self.pagedTextViews replaceObjectAtIndex:page withObject:presentationView];
         }
         
+    }
+    
+    if(presentationView) {
+        [UIView animateWithDuration:0.5f animations:^{
+            
+            [presentationView setFrame:frame];
+            
+        }completion:^(BOOL finished) {
+            
+            if(presentationView.alpha < 1) {
+                
+                [UIView animateWithDuration:0.3f animations:^{
+                    [presentationView setAlpha:1];
+                    
+                }completion:nil];
+                
+            }
+        }];
     }
     
     
@@ -273,7 +358,7 @@
     CGFloat otherAlpha = fabs(perc);
     CGFloat alpha = kMul - otherAlpha;
     
-
+    
     //NSLog(@"%d:%f - %d:%f",page, alpha, otherPage, otherAlpha);
     
     if(page < numberOfPages) {
@@ -285,8 +370,28 @@
     
 }
 
+
+- (void)updateContentSize:(UIInterfaceOrientation)toInterfaceOrientation {
+    
+    CGFloat w, h;
+    
+    CGFloat a = self.scrollView.bounds.size.width;
+    CGFloat b = self.scrollView.bounds.size.height;
+    
+    w=a, h=b;
+    
+    //    if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+    //        w=b, h=a;
+    //    }
+    
+    self.scrollView.contentSize = CGSizeMake(w * numberOfPages, h);
+    
+    
+    
+}
+
 - (void)checkTimer {
-    if (self.autoScrollDelay) {
+    if (self.autoScrollDelay && !self.autoScrollTimer.isValid) {
         self.autoScrollTimer = [NSTimer timerWithTimeInterval:self.autoScrollDelay
                                                        target:self
                                                      selector:@selector(autoScroll:)
@@ -305,23 +410,30 @@
     RNDScrollPresentationInfo *info = self.infoArray[page];
     BottomLabel *lblText = nil;
     
-    if(info.infoText) {
-        //...
-        
-        lblText = [[BottomLabel alloc] init];
-        lblText.numberOfLines = 0;
-        
-        if(self.settingsLabel) {
-            //label settings
-            [lblText setFont:self.settingsLabel.font];
-            [lblText setBackgroundColor:self.settingsLabel.backgroundColor];
-            [lblText setTextColor:self.settingsLabel.textColor];
-            [lblText setTextAlignment:self.settingsLabel.textAlignment];
-            [lblText setLineBreakMode:self.settingsLabel.lineBreakMode];
+    if((NSNull*)info != [NSNull null]) {
+        if(info.infoText) {
+            //...
+            
+            lblText = [[BottomLabel alloc] init];
+            
+            CGRect frame = self.scrollView.frame;
+            frame.size.width -= 2*xPadding;
+            [lblText setFrame:frame];
+            
+            lblText.numberOfLines = 0;
+            
+            if(self.settingsLabel) {
+                //label settings
+                [lblText setFont:self.settingsLabel.font];
+                [lblText setBackgroundColor:self.settingsLabel.backgroundColor];
+                [lblText setTextColor:self.settingsLabel.textColor];
+                [lblText setTextAlignment:self.settingsLabel.textAlignment];
+                [lblText setLineBreakMode:self.settingsLabel.lineBreakMode];
+            }
+            
+            [lblText setText:info.infoText];
+            //...
         }
-        
-        [lblText setText:info.infoText];
-        //...
     }
     
     return lblText;
@@ -349,7 +461,7 @@
     frame.origin.x = frame.size.width * page;
     frame.origin.y = 0;
     [self.scrollView scrollRectToVisible:frame animated:YES];
-
+    
 }
 
 
@@ -358,7 +470,7 @@
         [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
             ;
         }];
-
+        
     }
     else {
         [self.navigationController popToRootViewControllerAnimated:YES];
@@ -373,10 +485,17 @@
     }
 }
 
+- (void)longTapped:(UIGestureRecognizer*)gesture {
+    if(gesture.state == UIGestureRecognizerStateEnded) {
+        if([self.delegate respondsToSelector:@selector(presentationLongTouched:)]) {
+            [self.delegate presentationLongTouched:self.pageControl.currentPage];
+        }
+    }
+}
 
 #pragma mark - UIScrollView Delegate
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
- 
+    
     CGFloat pageWidth = self.scrollView.frame.size.width;
     CGFloat offset = self.scrollView.contentOffset.x;
     [self offsetChanged:offset];

@@ -8,13 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+@class RNDScrollPresentation;
+
 @protocol RNDScrollPresentationDelegate <NSObject>
 
-@required
-- (UIView*)presentationViewForPage:(NSUInteger)page withSize:(CGSize)size;
-
 @optional
+- (UIView*)scrollPresentation:(RNDScrollPresentation*)scrollPresentation viewForPage:(NSUInteger)page withSize:(CGSize)size;
+- (UIView*)scrollPresentation:(RNDScrollPresentation*)scrollPresentation backgroundViewForPage:(NSUInteger)page withSize:(CGSize)size;
+
+
 - (void)presentationTouched:(NSUInteger)page;
+- (void)presentationLongTouched:(NSUInteger)page;
 
 @end
 
@@ -29,6 +33,11 @@
 @interface RNDScrollPresentation : UIViewController <UIScrollViewDelegate>
 
 - (id)initWithArray:(NSArray*)infoArray;
+
+//implement <scrollPresentation:backgroundViewForPage:withSize:> if you want to use this initializer!
+- (id)initWithPageCount:(NSUInteger)pageCount;
+
+
 
 
 @property (nonatomic, retain) UIScrollView *scrollView;

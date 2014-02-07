@@ -17,7 +17,7 @@
     if (self) {
         // Initialization code
         [self setup];
-    
+        
     }
     return self;
 }
@@ -33,9 +33,33 @@
     
     [self setBackgroundColor:[UIColor clearColor]];
     [self setTextColor:[UIColor colorWithWhite:0.390 alpha:1.000]];
-   
+    
+    self.numberOfLines = 0;
+    
     [self setFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:14]];
     [self setTextAlignment:NSTextAlignmentCenter];
+}
+
+- (void)setFrame:(CGRect)newFrame {
+    
+    if(CGSizeEqualToSize(newFrame.size, self.frame.size) && CGPointEqualToPoint(newFrame.origin, self.frame.origin)) {
+        return;
+    }
+    
+    if(CGRectIsEmpty(newFrame)) {
+        //return;
+    }
+    
+    CGSize constraint = CGSizeMake(self.frame.size.width, INT_MAX);
+    
+    CGSize size = [self.text sizeWithFont:self.font constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
+    CGRect frame = newFrame;
+    
+    CGFloat yTop = frame.origin.y + frame.size.height - size.height;
+    frame.origin.y = yTop;
+    frame.size.height = size.height;
+    
+    [super setFrame:frame];
 }
 
 - (void)setText:(NSString *)text {
@@ -45,7 +69,7 @@
     text = [NSString stringWithFormat:@" %@ ",text];
     [super setText:text];
     
-
+    
     CGSize constraint = CGSizeMake(self.frame.size.width, INT_MAX);
     
     CGSize size = [text sizeWithFont:self.font constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
