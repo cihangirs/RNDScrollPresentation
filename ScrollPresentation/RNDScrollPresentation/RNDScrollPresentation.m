@@ -111,6 +111,11 @@
     
 }
 
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+    return NO;
+}
+
+
 
 - (void)didReceiveMemoryWarning
 {
