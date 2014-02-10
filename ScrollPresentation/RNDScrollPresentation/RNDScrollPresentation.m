@@ -107,7 +107,7 @@
     
     [self setupPagedViews];
     
-    
+    [self.delegate scrollPresentationDidLoad:self];
     
 }
 
@@ -484,16 +484,16 @@
 
 - (void)tapped:(UIGestureRecognizer*)gesture {
     if(gesture.state == UIGestureRecognizerStateEnded) {
-        if([self.delegate respondsToSelector:@selector(presentationTouched:)]) {
-            [self.delegate presentationTouched:self.pageControl.currentPage];
+        if([self.delegate respondsToSelector:@selector(scrollPresentation:presentationTouched:)]) {
+            [self.delegate scrollPresentation:self  presentationTouched:self.pageControl.currentPage];
         }
     }
 }
 
 - (void)longTapped:(UIGestureRecognizer*)gesture {
     if(gesture.state == UIGestureRecognizerStateEnded) {
-        if([self.delegate respondsToSelector:@selector(presentationLongTouched:)]) {
-            [self.delegate presentationLongTouched:self.pageControl.currentPage];
+        if([self.delegate respondsToSelector:@selector(scrollPresentation:presentationLongTouched:)]) {
+            [self.delegate scrollPresentation:self presentationLongTouched:self.pageControl.currentPage];
         }
     }
 }

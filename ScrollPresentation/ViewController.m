@@ -131,5 +131,10 @@
     
 }
 
+- (void)scrollPresentationDidLoad:(RNDScrollPresentation *)scrollPresentation {
+    [scrollPresentation.pageControl setPageIndicatorTintColor:[UIColor orangeColor]];
+    [scrollPresentation.pageControl setCurrentPageIndicatorTintColor:[UIColor redColor]];
+}
+
 
 @end
