@@ -11,8 +11,8 @@
 
 #define DEBUG_COLORS    (0)
 
-#define xPadding (30)
-#define yPadding (15)
+#define xPadding (10)
+#define yPadding (10)
 
 
 @implementation RNDScrollPresentationInfo
@@ -21,7 +21,7 @@
 
 @interface RNDScrollPresentation () {
     BOOL toolbarHidden;
-    
+    BOOL firstAppear;
     int numberOfPages;
 }
 
@@ -82,7 +82,7 @@
     [self.view addSubview:self.scrollView];
     
     if(DEBUG_COLORS){
-        [self.scrollView setBackgroundColor:[UIColor colorWithRed:1.000 green:0.500 blue:0.000 alpha:0.360]];//REMOVE
+        [self.scrollView setBackgroundColor:[UIColor colorWithRed:1.000 green:0.500 blue:0.000 alpha:0.360]];
     }
     
     CGFloat bottomPaddingY = (self.pageControllBottomPadding ? self.pageControllBottomPadding:38);
@@ -129,7 +129,14 @@
     
     [self.navigationController setToolbarHidden:YES animated:YES];
     [self.scrollView setDelegate:self];
-    
+
+    if(firstAppear) {
+        [self changePage:nil];
+    }
+    if(!firstAppear) {
+        firstAppear = YES;
+
+    }
     [self checkTimer];
 }
 
@@ -137,9 +144,13 @@
     [super viewDidDisappear:animated];
     
     [self.navigationController setToolbarHidden:toolbarHidden animated:YES];
+    
+    
     [self.scrollView setDelegate:nil];
     
     [self.autoScrollTimer invalidate];
+    
+
 }
 
 - (void)viewDidLayoutSubviews {
@@ -311,7 +322,7 @@
                 [self.scrollView addSubview:presentationView];
                 
                 if(DEBUG_COLORS) {
-                    [presentationView setBackgroundColor:[UIColor colorWithRed:0.000 green:0.000 blue:1.000 alpha:0.810]];//REMOVE
+                    [presentationView setBackgroundColor:[UIColor colorWithRed:0.000 green:0.000 blue:1.000 alpha:0.810]];
                 }
                 
             }
@@ -324,25 +335,21 @@
     }
     
     if(presentationView) {
-        [UIView animateWithDuration:0.5f animations:^{
+        
+        [presentationView setFrame:frame];
+        if(presentationView.alpha < 1) {
             
-            [presentationView setFrame:frame];
-            
-        }completion:^(BOOL finished) {
-            
-            if(presentationView.alpha < 1) {
+            [UIView animateWithDuration:0.3f animations:^{
+                [presentationView setAlpha:1];
                 
-                [UIView animateWithDuration:0.3f animations:^{
-                    [presentationView setAlpha:1];
-                    
-                }completion:nil];
-                
-            }
-        }];
+            }completion:nil];
+            
+        }
     }
     
     
 }
+
 
 - (void)offsetChanged:(CGFloat)offset {
     
@@ -452,6 +459,8 @@
     return lblText;
 }
 
+
+
 #pragma mark - Actions
 - (IBAction)changePage:(id)sender {
     
@@ -461,7 +470,10 @@
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             [UIView animateWithDuration:0.4f animations:^{
-                [self.pagedImgViews[numberOfPages-1] setAlpha:0.0f];
+                for(int i = 1; i < numberOfPages; i++) {
+                    [self.pagedImgViews[i] setAlpha:0.0f];
+                }
+                
             }];
         });
         page = 0;
