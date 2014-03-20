@@ -8,9 +8,6 @@
 
 #import "RNDScrollPresentation.h"
 #import "BottomLabel.h"
-#import "ProjectNavigationController.h"
-#import "ProjectImageViewController.h"
-#import "AppDelegate.h"
 
 #define DEBUG_COLORS    (0)
 
@@ -110,9 +107,14 @@
     
     [self setupPagedViews];
     
-    
+    [self.delegate scrollPresentationDidLoad:self];
     
 }
+
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+    return NO;
+}
+
 
 
 - (void)didReceiveMemoryWarning
@@ -450,24 +452,6 @@
     return lblText;
 }
 
-- (void)showFullscreenImage:(UIImage*)img {
-    
-    return;//TODO
-    if(img == nil)  {   return; }
-    
-    ProjectImageViewController *vc = [[ProjectImageViewController alloc]initWithNibName:nil bundle:nil];
-    [vc setImages:@[img]];
-    vc.firstIndex = 0;
-    
-    UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:vc];
-    
-   
-
-    [[[AppManager shared]topNavigationController] presentViewController:nav animated:YES completion:nil];
-
-}
-
-
 #pragma mark - Actions
 - (IBAction)changePage:(id)sender {
     
@@ -506,37 +490,18 @@
     }
 }
 
-
 - (void)tapped:(UIGestureRecognizer*)gesture {
-    
     if(gesture.state == UIGestureRecognizerStateEnded) {
-        if(self.showImgOnTap) {
-            NSUInteger index = self.pageControl.currentPage;
-            if([self.pagedImgViews count] > index) {
-                UIView *bgView = self.pagedImgViews[index];
-                if([bgView isKindOfClass:[UIImageView class]]) {
-                    UIImageView *imgview = (UIImageView*)bgView;
-                    UIImage *img = [imgview image];
-                    
-                    [self showFullscreenImage:img];
-
-                }
-            }
-            
-        }
-        
-        else {
-            if([self.delegate respondsToSelector:@selector(presentationTouched:)]) {
-                [self.delegate presentationTouched:self.pageControl.currentPage];
-            }
+        if([self.delegate respondsToSelector:@selector(scrollPresentation:presentationTouched:)]) {
+            [self.delegate scrollPresentation:self  presentationTouched:self.pageControl.currentPage];
         }
     }
 }
 
 - (void)longTapped:(UIGestureRecognizer*)gesture {
     if(gesture.state == UIGestureRecognizerStateEnded) {
-        if([self.delegate respondsToSelector:@selector(presentationLongTouched:)]) {
-            [self.delegate presentationLongTouched:self.pageControl.currentPage];
+        if([self.delegate respondsToSelector:@selector(scrollPresentation:presentationLongTouched:)]) {
+            [self.delegate scrollPresentation:self presentationLongTouched:self.pageControl.currentPage];
         }
     }
 }

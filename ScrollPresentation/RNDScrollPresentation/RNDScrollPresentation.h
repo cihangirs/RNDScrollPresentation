@@ -15,10 +15,10 @@
 @optional
 - (UIView*)scrollPresentation:(RNDScrollPresentation*)scrollPresentation viewForPage:(NSUInteger)page withSize:(CGSize)size;
 - (UIView*)scrollPresentation:(RNDScrollPresentation*)scrollPresentation backgroundViewForPage:(NSUInteger)page withSize:(CGSize)size;
+- (void)scrollPresentationDidLoad:(RNDScrollPresentation*)scrollPresentation;
 
-
-- (void)presentationTouched:(NSUInteger)page;
-- (void)presentationLongTouched:(NSUInteger)page;
+- (void)scrollPresentation:(RNDScrollPresentation*)scrollPresentation presentationTouched:(NSUInteger)page;
+- (void)scrollPresentation:(RNDScrollPresentation*)scrollPresentation presentationLongTouched:(NSUInteger)page;
 
 @end
 
