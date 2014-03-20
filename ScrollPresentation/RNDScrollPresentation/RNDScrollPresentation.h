@@ -28,6 +28,8 @@
 @property (nonatomic, retain) NSString *infoText;
 @property (nonatomic, retain) NSArray *infoTips;
 
+
+
 @end
 
 @interface RNDScrollPresentation : UIViewController <UIScrollViewDelegate>
@@ -39,6 +41,8 @@
 
 
 
+@property (nonatomic) BOOL textOnMiddle;
+@property (nonatomic) BOOL showImgOnTap;
 
 @property (nonatomic, retain) UIScrollView *scrollView;
 @property (nonatomic, retain) UIPageControl *pageControl;

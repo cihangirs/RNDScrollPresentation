@@ -8,6 +8,9 @@
 
 #import "RNDScrollPresentation.h"
 #import "BottomLabel.h"
+#import "ProjectNavigationController.h"
+#import "ProjectImageViewController.h"
+#import "AppDelegate.h"
 
 #define DEBUG_COLORS    (0)
 
@@ -391,6 +394,9 @@
 }
 
 - (void)checkTimer {
+    
+    if(numberOfPages < 2)   { return;   }
+    
     if (self.autoScrollDelay && !self.autoScrollTimer.isValid) {
         self.autoScrollTimer = [NSTimer timerWithTimeInterval:self.autoScrollDelay
                                                        target:self
@@ -408,13 +414,18 @@
 - (UIView*)defaultPresentationView:(NSUInteger)page {
     
     RNDScrollPresentationInfo *info = self.infoArray[page];
-    BottomLabel *lblText = nil;
+    UILabel *lblText = nil;
     
     if((NSNull*)info != [NSNull null]) {
         if(info.infoText) {
             //...
             
-            lblText = [[BottomLabel alloc] init];
+            if(self.textOnMiddle) {
+                lblText = [[UILabel alloc] init];
+            }
+            else {
+                lblText = [[BottomLabel alloc] init];
+            }
             
             CGRect frame = self.scrollView.frame;
             frame.size.width -= 2*xPadding;
@@ -438,6 +449,24 @@
     
     return lblText;
 }
+
+- (void)showFullscreenImage:(UIImage*)img {
+    
+    return;//TODO
+    if(img == nil)  {   return; }
+    
+    ProjectImageViewController *vc = [[ProjectImageViewController alloc]initWithNibName:nil bundle:nil];
+    [vc setImages:@[img]];
+    vc.firstIndex = 0;
+    
+    UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:vc];
+    
+   
+
+    [[[AppManager shared]topNavigationController] presentViewController:nav animated:YES completion:nil];
+
+}
+
 
 #pragma mark - Actions
 - (IBAction)changePage:(id)sender {
@@ -477,10 +506,29 @@
     }
 }
 
+
 - (void)tapped:(UIGestureRecognizer*)gesture {
+    
     if(gesture.state == UIGestureRecognizerStateEnded) {
-        if([self.delegate respondsToSelector:@selector(presentationTouched:)]) {
-            [self.delegate presentationTouched:self.pageControl.currentPage];
+        if(self.showImgOnTap) {
+            NSUInteger index = self.pageControl.currentPage;
+            if([self.pagedImgViews count] > index) {
+                UIView *bgView = self.pagedImgViews[index];
+                if([bgView isKindOfClass:[UIImageView class]]) {
+                    UIImageView *imgview = (UIImageView*)bgView;
+                    UIImage *img = [imgview image];
+                    
+                    [self showFullscreenImage:img];
+
+                }
+            }
+            
+        }
+        
+        else {
+            if([self.delegate respondsToSelector:@selector(presentationTouched:)]) {
+                [self.delegate presentationTouched:self.pageControl.currentPage];
+            }
         }
     }
 }
