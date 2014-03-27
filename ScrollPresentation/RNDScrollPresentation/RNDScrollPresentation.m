@@ -107,7 +107,9 @@
     
     [self setupPagedViews];
     
-    [self.delegate scrollPresentationDidLoad:self];
+    if([self.delegate respondsToSelector:@selector(scrollPresentationDidLoad:)]) {
+        [self.delegate scrollPresentationDidLoad:self];
+    }
     
 }
 
