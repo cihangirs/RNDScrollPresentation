@@ -52,7 +52,8 @@
     
     CGSize constraint = CGSizeMake(self.frame.size.width, INT_MAX);
     
-    CGSize size = [self.text sizeWithFont:self.font constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
+    CGSize size = [self.text boundingRectWithSize:constraint options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.font} context:nil].size;
+    
     CGRect frame = newFrame;
     
     CGFloat yTop = frame.origin.y + frame.size.height - size.height;
@@ -72,7 +73,8 @@
     
     CGSize constraint = CGSizeMake(self.frame.size.width, INT_MAX);
     
-    CGSize size = [text sizeWithFont:self.font constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
+    CGSize size = [text boundingRectWithSize:constraint options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.font} context:nil].size;
+    
     CGRect frame = self.frame;
     
     CGFloat yTop = frame.origin.y + frame.size.height - size.height;
