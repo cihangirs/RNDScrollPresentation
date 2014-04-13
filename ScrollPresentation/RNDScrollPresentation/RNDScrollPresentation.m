@@ -102,7 +102,7 @@
     
     if([self.navigationController.viewControllers count] == 1) {
         UIBarButtonItem *dismissItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismiss:)];
-        self.navigationItem.rightBarButtonItem = dismissItem;
+        self.navigationItem.leftBarButtonItem = dismissItem;
     }
     
     [self setupPagedViews];
