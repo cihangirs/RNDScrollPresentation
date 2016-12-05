@@ -11,8 +11,8 @@
 
 #define DEBUG_COLORS    (0)
 
-#define xPadding (10)
-#define yPadding (10)
+#define xPadding (0)
+#define yPadding (0)
 
 
 @implementation RNDScrollPresentationInfo
